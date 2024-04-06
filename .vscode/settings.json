@@ -1,0 +1,9 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "prettier.configPath": ".prettierrc",
+  "prettier.endOfLine": "auto",
+  "prettier.singleQuote": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
