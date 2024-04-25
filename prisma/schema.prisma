@@ -17,9 +17,12 @@ model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  email     String
+  email     String   @unique
   hash      String
   username  String
+  stores    Store[]
+
+  @@map("users")
 }
 
 model Store {
@@ -28,4 +31,9 @@ model Store {
   updatedAt   DateTime @updatedAt
   name        String
   description String?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("stores")
 }
