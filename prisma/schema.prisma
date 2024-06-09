@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") //Prisma will get the env variables in the .env file, need to define explicitly if you wanna use another file
 }
 
 model User {
@@ -33,7 +33,7 @@ model Store {
   description String?
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  users  User @relation(fields: [userId], references: [id])
 
   @@map("stores")
 }

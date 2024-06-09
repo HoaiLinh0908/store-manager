@@ -27,7 +27,7 @@ export class AuthService {
         },
       });
 
-      return this.signToken(user.id, user.email);
+      return { message: 'Signup success!', user };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {

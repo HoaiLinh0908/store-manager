@@ -16,17 +16,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
+  //This method is called when there is a request to API with decorator @UseGuards(JwtGuard)
   async validate(payload: { sub: number; email: string }) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: payload.sub,
       },
     });
-    console.log({ user });
     if (user) {
       const { hash, ...dtoUser } = user;
       return dtoUser;
     }
+    console.log({ user });
     return user;
   }
 }

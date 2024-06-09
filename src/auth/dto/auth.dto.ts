@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class AuthDto {
-  @IsEmail()
+  @IsEmail() //add validation for request body
   email: string;
 
   @IsString()
