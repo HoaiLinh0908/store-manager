@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from 'src/app.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as pactum from 'pactum';
-import { AuthDto } from 'src/auth/dto';
+import { SignUpDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
 
 describe('App e2e', () => {
@@ -35,9 +35,11 @@ describe('App e2e', () => {
     app.close();
   });
 
-  const dto: AuthDto = {
+  const dto: SignUpDto = {
     email: 'linh@test.com',
     password: '123',
+    firstName: 'Linh',
+    lastName: 'Do',
   };
 
   //These tests are depended on the execution order

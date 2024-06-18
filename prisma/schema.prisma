@@ -14,26 +14,42 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  email     String          @unique
   hash      String
-  username  String
-  stores    Store[]
-
-  @@map("users")
+  username  String?
+  firstName String
+  lastName  String
+  dob       DateTime?
+  stores    StoresOnUsers[]
 }
 
 model Store {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          Int             @id @default(autoincrement())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   name        String
   description String?
+  users       StoresOnUsers[]
+}
 
-  userId Int
-  users  User @relation(fields: [userId], references: [id])
+model StoresOnUsers {
+  user              User            @relation(fields: [userId], references: [id])
+  userId            Int
+  store             Store           @relation(fields: [storeId], references: [id])
+  storeId           Int
+  assignedAt        DateTime        @default(now())
+  assignedBy        String
+  permission        StorePermission @relation(fields: [storePermissionId], references: [id])
+  storePermissionId Int
 
-  @@map("stores")
+  @@id([userId, storeId])
+}
+
+model StorePermission {
+  id            Int             @id @default(autoincrement())
+  name          String
+  StoresOnUsers StoresOnUsers[]
 }

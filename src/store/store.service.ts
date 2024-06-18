@@ -9,7 +9,11 @@ export class StoreService {
   async getStores(userId: number) {
     return await this.prisma.store.findMany({
       where: {
-        userId,
+        users: {
+          some: {
+            userId,
+          },
+        },
       },
     });
   }
@@ -18,14 +22,29 @@ export class StoreService {
     return await this.prisma.store.findFirst({
       where: {
         id: storeId,
-        userId,
+        users: {
+          some: {
+            userId,
+          },
+        },
       },
     });
   }
 
   async createStore(userId: number, dto: CreateStoreDto) {
     const store = await this.prisma.store.create({
-      data: { userId, ...dto },
+      data: {
+        users: {
+          create: [
+            {
+              assignedBy: userId.toString(),
+              storePermissionId: 1,
+              userId,
+            },
+          ],
+        },
+        ...dto,
+      },
     });
 
     return store;
@@ -35,10 +54,13 @@ export class StoreService {
     const store = await this.prisma.store.findUnique({
       where: {
         id: storeId,
+        users: {
+          some: { userId },
+        },
       },
     });
 
-    if (!store || store.userId != userId) {
+    if (!store) {
       throw new ForbiddenException(
         `Store with id ${storeId} does not exist or does not have owner`,
       );
@@ -58,15 +80,19 @@ export class StoreService {
     const store = await this.prisma.store.findUnique({
       where: {
         id: storeId,
+        users: {
+          some: { userId },
+        },
       },
     });
 
-    if (!store || store.userId != userId) {
+    if (!store) {
       throw new ForbiddenException(
         `Store with id ${storeId} does not exist or does not have owner`,
       );
     }
 
+    //TODO: Remove records in the StoresOnUsers table too
     return await this.prisma.store.delete({
       where: {
         id: storeId,
