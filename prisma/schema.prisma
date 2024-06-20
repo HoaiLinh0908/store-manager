@@ -24,6 +24,7 @@ model User {
   lastName  String
   dob       DateTime?
   stores    StoresOnUsers[]
+  status    String
 }
 
 model Store {
@@ -33,23 +34,22 @@ model Store {
   name        String
   description String?
   users       StoresOnUsers[]
+  status      String
 }
 
 model StoresOnUsers {
-  user              User            @relation(fields: [userId], references: [id])
-  userId            Int
-  store             Store           @relation(fields: [storeId], references: [id])
-  storeId           Int
-  assignedAt        DateTime        @default(now())
-  assignedBy        String
-  permission        StorePermission @relation(fields: [storePermissionId], references: [id])
-  storePermissionId Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId    Int
+  assignedAt DateTime @default(now())
+  assignedBy String
+  permission String
 
   @@id([userId, storeId])
 }
 
 model StorePermission {
-  id            Int             @id @default(autoincrement())
-  name          String
-  StoresOnUsers StoresOnUsers[]
+  id   Int    @id @default(autoincrement())
+  name String
 }

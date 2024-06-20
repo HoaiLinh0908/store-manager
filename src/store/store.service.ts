@@ -38,11 +38,12 @@ export class StoreService {
           create: [
             {
               assignedBy: userId.toString(),
-              storePermissionId: 1,
+              permission: 'Admin', //Define constants for this
               userId,
             },
           ],
         },
+        status: 'Active', //Define constants for this
         ...dto,
       },
     });

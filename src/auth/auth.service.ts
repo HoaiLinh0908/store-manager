@@ -25,6 +25,7 @@ export class AuthService {
           hash,
           firstName: dto.firstName,
           lastName: dto.lastName,
+          status: 'Active', //Create constants for this
         },
       });
 
