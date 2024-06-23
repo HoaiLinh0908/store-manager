@@ -33,8 +33,12 @@ model Store {
   updatedAt   DateTime        @updatedAt
   name        String
   description String?
-  users       StoresOnUsers[]
   status      String
+  users       StoresOnUsers[]
+  products    Product[]
+  expenses    Expense[]
+  bills       Bill[]
+  Report      Report[]
 }
 
 model StoresOnUsers {
@@ -52,4 +56,68 @@ model StoresOnUsers {
 model StorePermission {
   id   Int    @id @default(autoincrement())
   name String
+}
+
+model Product {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdBy   String
+  name        String
+  description String?
+  price       BigInt
+  cost        BigInt
+  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId     Int
+  status      String
+  bills       ItemOnBill[]
+}
+
+model Bill {
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  createdBy String
+  amount    BigInt
+  store     Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId   Int
+  status    String
+  items     ItemOnBill[]
+}
+
+model ItemOnBill {
+  assignAt  DateTime @default(now())
+  assignBy  String
+  bill      Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  billId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int
+
+  @@id([productId, billId])
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  name      String
+  detail    String
+  amount    BigInt
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId   Int
+  status    String
+}
+
+model Report {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  name      String
+  detail    String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId   Int
+  status    String
 }

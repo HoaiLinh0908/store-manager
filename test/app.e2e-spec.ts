@@ -23,7 +23,6 @@ describe('App e2e', () => {
     );
 
     //Start the app on port 3456
-    //await app.init();
     await app.listen('3456');
 
     prismaService = app.get(PrismaService);
@@ -36,13 +35,13 @@ describe('App e2e', () => {
   });
 
   const dto: SignUpDto = {
-    email: 'linh@test.com',
+    email: `linh+${Date.now()}@test.com`,
     password: '123',
     firstName: 'Linh',
     lastName: 'Do',
   };
 
-  //These tests are depended on the execution order
+  //These tests are depended on the execution order and can be improved
   describe('Authentication', () => {
     it('Should signup', () => {
       return pactum.spec().post('/auth/signup').withBody(dto).expectStatus(200);
@@ -97,7 +96,10 @@ describe('App e2e', () => {
     });
 
     it('Create new store', () => {
-      const dto = { name: 'store1', description: 'Here is the description' };
+      const dto = {
+        name: `Store_${Date.now()}`,
+        description: 'Here is the description',
+      };
       return pactum
         .spec()
         .post('/stores/create')
@@ -123,7 +125,7 @@ describe('App e2e', () => {
 
     it('Edit store', () => {
       const dto = {
-        name: 'new name for store',
+        name: `Edited_Store_${Date.now()}`,
         description: 'okay this is the description',
       };
       return pactum

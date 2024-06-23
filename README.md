@@ -27,8 +27,8 @@ $ npm run start:prod
 ## Test
 
 ```bash
-# Restart the database
-$ npm run db:dev:restart
+# Restart the test database
+$ npm run db:test:restart
 ```
 
 ```bash

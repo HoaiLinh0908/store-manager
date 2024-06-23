@@ -1,12 +1,14 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateStoreDto, EditStoreDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StorePermission, StoreStatus } from 'src/utils/constants';
 
 @Injectable()
 export class StoreService {
   constructor(private prisma: PrismaService) {}
 
   async getStores(userId: number) {
+    //TODO: Should create another level to work with the DB -> DRY -> Single Responsibility
     return await this.prisma.store.findMany({
       where: {
         users: {
@@ -19,7 +21,7 @@ export class StoreService {
   }
 
   async getStoreById(userId: number, storeId: number) {
-    return await this.prisma.store.findFirst({
+    return await this.prisma.store.findUnique({
       where: {
         id: storeId,
         users: {
@@ -38,12 +40,12 @@ export class StoreService {
           create: [
             {
               assignedBy: userId.toString(),
-              permission: 'Admin', //Define constants for this
+              permission: StorePermission.Admin,
               userId,
             },
           ],
         },
-        status: 'Active', //Define constants for this
+        status: StoreStatus.Active,
         ...dto,
       },
     });
@@ -94,10 +96,11 @@ export class StoreService {
     }
 
     //TODO: Remove records in the StoresOnUsers table too
-    return await this.prisma.store.delete({
+    return await this.prisma.store.update({
       where: {
         id: storeId,
       },
+      data: { status: StoreStatus.Inactive },
     });
   }
 }
