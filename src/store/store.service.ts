@@ -1,106 +1,55 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateStoreDto, EditStoreDto } from './dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { StorePermission, StoreStatus } from 'src/utils/constants';
+import { StoreRepository } from './store.repository';
 
 @Injectable()
 export class StoreService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private storeRepo: StoreRepository) {}
 
   async getStores(userId: number) {
-    //TODO: Should create another level to work with the DB -> DRY -> Single Responsibility
-    return await this.prisma.store.findMany({
-      where: {
-        users: {
-          some: {
-            userId,
-          },
-        },
-      },
-    });
+    return await this.storeRepo.getStoresByUser(userId);
   }
 
   async getStoreById(userId: number, storeId: number) {
-    return await this.prisma.store.findUnique({
-      where: {
-        id: storeId,
-        users: {
-          some: {
-            userId,
-          },
-        },
-      },
-    });
+    return await this.storeRepo.getStoreById(userId, storeId);
   }
 
   async createStore(userId: number, dto: CreateStoreDto) {
-    const store = await this.prisma.store.create({
-      data: {
-        users: {
-          create: [
-            {
-              assignedBy: userId.toString(),
-              permission: StorePermission.Admin,
-              userId,
-            },
-          ],
+    const dao = {
+      status: StoreStatus.Active,
+      users: [
+        {
+          assignedBy: userId.toString(),
+          permission: StorePermission.Admin,
+          userId,
         },
-        status: StoreStatus.Active,
-        ...dto,
-      },
-    });
+      ],
+      ...dto,
+    };
 
-    return store;
+    return await this.storeRepo.createStore(dao);
   }
 
   async editStore(userId: number, storeId: number, dto: EditStoreDto) {
-    const store = await this.prisma.store.findUnique({
-      where: {
-        id: storeId,
-        users: {
-          some: { userId },
-        },
-      },
-    });
+    const store = await this.storeRepo.getStoreById(userId, storeId);
 
     if (!store) {
       throw new ForbiddenException(
-        `Store with id ${storeId} does not exist or does not have owner`,
+        `Store with id ${storeId} does not exist or you do not have permission`,
       );
     }
 
-    return await this.prisma.store.update({
-      where: {
-        id: storeId,
-      },
-      data: {
-        ...dto,
-      },
-    });
+    return await this.storeRepo.editStore({ id: storeId, ...dto });
   }
 
-  async deleteStore(userId: number, storeId: number) {
-    const store = await this.prisma.store.findUnique({
-      where: {
-        id: storeId,
-        users: {
-          some: { userId },
-        },
-      },
-    });
-
+  async deactivateStore(userId: number, storeId: number) {
+    const store = await this.storeRepo.getStoreById(userId, storeId);
     if (!store) {
       throw new ForbiddenException(
-        `Store with id ${storeId} does not exist or does not have owner`,
+        `Store with id ${storeId} does not exist or you do not have permission`,
       );
     }
-
-    //TODO: Remove records in the StoresOnUsers table too
-    return await this.prisma.store.update({
-      where: {
-        id: storeId,
-      },
-      data: { status: StoreStatus.Inactive },
-    });
+    return await this.storeRepo.deactivateStore(storeId);
   }
 }

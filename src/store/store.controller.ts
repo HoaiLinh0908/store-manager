@@ -51,6 +51,6 @@ export class StoreController {
     @GetUser() user: User,
     @Param('id', ParseIntPipe) storeId: number,
   ) {
-    this.storeService.deleteStore(user.id, storeId);
+    this.storeService.deactivateStore(user.id, storeId);
   }
 }
