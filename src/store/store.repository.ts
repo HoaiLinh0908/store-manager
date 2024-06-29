@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { EditStoreDto } from './dto';
 import { StoreStatus } from 'src/utils/constants';
 import { CreateStoreDao, EditStoreDao } from './dao';
 

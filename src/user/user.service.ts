@@ -1,20 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { EditUserDto } from './dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private userRepo: UserRepository) {}
+
   async editUser(userId: number, dto: EditUserDto) {
-    const user = await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        ...dto,
-      },
-    });
+    const user = await this.userRepo.updateUser(userId, dto);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { hash, ...userInfo } = user;
